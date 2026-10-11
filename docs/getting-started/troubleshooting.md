@@ -178,6 +178,22 @@ outlasts `--check-timeout`, `--fix` writes nothing.
 For `nested-pack-commits`, declare the same version on both imports and run
 `gc import install`.
 
+### What these checks do not tell you
+
+- `prompt-gc-commands` reads code only. A command described in prose is not
+  checked, and a prohibition worded outside its cue list still warns.
+- It checks that a command, subcommand and flag exist. It cannot check that
+  an argument is valid, and it cannot tell a placeholder such as `<id>` from
+  a real value.
+- It checks against the `gc` running the doctor. A city driven by a
+  different `gc` binary can disagree.
+- `import-version-pins` ignores local path imports, and a version range such
+  as `^0.4` passes even though `0.x` allows breaking changes in any release.
+- `nested-pack-commits` compares a pack only with the pack whose directory
+  contains it. Sibling packs from one repository are never compared.
+- None of them reports whether a pinned pack is behind upstream, or whether a
+  pack's capabilities changed since you accepted it.
+
 ## "command not found" After Install
 
 If `gc` is installed but your shell cannot find it, the binary is not on your
