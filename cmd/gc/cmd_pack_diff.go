@@ -34,6 +34,33 @@ breaking, removal is additive. OPAQUE digests every file in the pack; a moved
 digest is UNCLASSIFIED, never NONE, unless the file was added or removed with
 the agent, command, formula or order it belongs to. Read the listed files.
 
+Strategy:
+  Compute compatibility; do not consume it. The diff reads only the two
+  directories: it ignores the declared version, never fetches, never runs
+  pack code and calls no model, so the same two directories give the same
+  verdict every time. What can be computed (PROVIDES, DEMANDS, USES) is
+  read from the pack's structure and TOML. What is written as prose is
+  extracted literally (MANDATES, NORMS), because a rule stated in a prompt
+  is still a rule. Everything else is covered by a digest (OPAQUE), so any
+  change at all is reported, at worst as UNCLASSIFIED.
+
+Limitations:
+  - UNCLASSIFIED means "a file changed and this command cannot say what it
+    means". It is a prompt to read the listed files, not a pass.
+  - MANDATES and NORMS are pattern-based. A commitment worded outside the
+    patterns (an obligation without must/never/always/do not, a command
+    other than claim or drain-ack) is seen only as a moved digest.
+  - Meaning is not compared. A prompt rewritten to change an agent's
+    judgment with no pattern change is UNCLASSIFIED, never BREAKING.
+  - An edit inside an existing file is never explained, so it is at least
+    UNCLASSIFIED; an inline addition to pack.toml is not ADDITIVE.
+  - A renamed file or agent reads as a removal plus an addition: BREAKING.
+  - Order contents are not read: disabling an order is UNCLASSIFIED.
+  - Inputs are directories only. An import binding or source@ref is not
+    resolved; extract each version first.
+  - The verdict describes the pack, not a city: whether a change breaks a
+    given city depends on which agents, commands and formulas it uses.
+
 Errors (a missing directory, an unparseable TOML file) also exit 1; with
 --json they print an ok:false failure payload instead of a verdict.
 

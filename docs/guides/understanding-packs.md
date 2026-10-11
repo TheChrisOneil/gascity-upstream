@@ -439,6 +439,29 @@ behavior with the same surface.
 `gc pack capability <dir>` prints one version's surface, and `--json` makes both
 commands scriptable.
 
+The diff is deterministic. It reads only the two directories: it ignores the
+declared version, never fetches, never runs pack code and calls no model.
+Structure and TOML are computed, prose rules are extracted literally, and
+everything else is covered by a digest, so any change is reported.
+
+Know its limits before you gate on it:
+
+- `UNCLASSIFIED` means a file changed and the command cannot say what the
+  change means. Read the listed files; it is not a pass.
+- Prompt commitments are found by pattern. An obligation worded without
+  *must*, *never*, *always* or *do not*, or a mandated command other than a
+  claim or drain-ack, shows only as a moved digest.
+- Meaning is not compared. A prompt rewritten to change an agent's judgment,
+  with no pattern change, is `UNCLASSIFIED`, never `BREAKING`.
+- An edit inside an existing file is at least `UNCLASSIFIED`, so an inline
+  addition to `pack.toml` is not `ADDITIVE`.
+- A renamed file or agent reads as a removal plus an addition: `BREAKING`.
+- Order contents are not read, so disabling an order is `UNCLASSIFIED`.
+- Both inputs are directories. Extract each version first; an import binding
+  or `source@ref` is not resolved.
+- The verdict describes the pack, not your city. Whether a `BREAKING` change
+  affects you depends on which agents, commands and formulas you use.
+
 ### Registry State Is Local
 
 Registry commands manage local discovery state. Pack imports manage shared city
