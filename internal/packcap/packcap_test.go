@@ -66,17 +66,17 @@ func copyPack(t *testing.T, src string) string {
 	return dst
 }
 
-func replaceIn(t *testing.T, dir, rel, old, new string) {
+func replaceIn(t *testing.T, dir, rel, from, to string) {
 	t.Helper()
 	path := filepath.Join(dir, filepath.FromSlash(rel))
 	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(data), old) {
-		t.Fatalf("%s does not contain %q", rel, old)
+	if !strings.Contains(string(data), from) {
+		t.Fatalf("%s does not contain %q", rel, from)
 	}
-	if err := os.WriteFile(path, []byte(strings.Replace(string(data), old, new, 1)), 0o644); err != nil {
+	if err := os.WriteFile(path, []byte(strings.Replace(string(data), from, to, 1)), 0o644); err != nil {
 		t.Fatal(err)
 	}
 }
